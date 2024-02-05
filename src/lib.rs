@@ -1,13 +1,11 @@
+#[macro_use]
+extern crate impl_ops;
+use std::ops;
+
 pub struct Vector {
     x: f32,
     y: f32,
     z: f32,
-}
-
-impl std::fmt::Debug for Vector {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "<{}, {}, {}>", self.x, self.y, self.z)
-    }
 }
 
 impl std::fmt::Display for Vector {
@@ -22,41 +20,15 @@ impl PartialEq for Vector {
     }
 }
 
-impl std::ops::Mul<f32> for &Vector {
-    type Output = Vector;
-
-    fn mul(self, rhs: f32) -> Self::Output {
-        Vector {
-            x: self.x * rhs,
-            y: self.y * rhs,
-            z: self.z * rhs,
-        }
-    }
-}
-
-impl std::ops::Add<&Vector> for &Vector {
-    type Output = Vector;
-
-    fn add(self, rhs: &Vector) -> Self::Output {
-        Vector {
-            x: self.x + rhs.x,
-            y: self.y + rhs.y,
-            z: self.z + rhs.z,
-        }
-    }
-}
-
-impl std::ops::Neg for Vector {
-    type Output = Vector;
-
-    fn neg(self) -> Self::Output {
-        Vector {
-            x: -self.x,
-            y: -self.y,
-            z: -self.z,
-        }
-    }
-}
+impl_op_ex!(-|a: Vector| -> Vector { Vector::new(-a.x, -a.y, -a.z) });
+impl_op_ex!(+ |a: Vector, b: Vector| -> Vector {Vector::new(
+    a.x + b.x,
+    a.y + b.y,
+    a.z + b.z,
+)});
+impl_op_ex!(-|a: Vector, b: Vector| -> Vector { Vector::new(a.x - b.x, a.y - b.y, a.z - b.z,) });
+impl_op_commutative!(*|a: Vector, b: f32| -> Vector { Vector::new(a.x * b, a.y * b, a.z * b) });
+impl_op_commutative!(*|a: &Vector, b: f32| -> Vector { Vector::new(a.x * b, a.y * b, a.z * b) });
 
 impl From<(f32, f32, f32)> for Vector {
     fn from(value: (f32, f32, f32)) -> Self {
